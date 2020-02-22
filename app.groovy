@@ -52,7 +52,7 @@ pipeline {
             steps {
                 dir("${installDir+projectName}"){
                     echo 'iniciando o build da aplicação ';
-                    sh 'mvn clean install'
+                    sh 'mvn clean install > /dev/null'
                 }     
             }
         }
