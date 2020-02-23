@@ -6,16 +6,13 @@ def appDir = "${installDir+projectName}/target/${fileName}"
 def javaOpts =  '-Xms256M -Xmx1024M'
 def description = ' Api Teste CI / CD'
 def user='root'
-def execStart="java -jar ${installDir+projectName}/target/${fileName} ${javaOpts}"
+def execStart="/usr/bin/java -jar ${installDir+projectName}/target/${fileName} ${javaOpts}"
 def serviceFile = "/etc/systemd/system/${projectName}.service"
 def skipTests =  true
-def envOpts = ""
-/*
 def envOpts = """
                     export JDK_JAVA_OPTIONS="--add-opens java.base/java.lang=com.google.guice,javassist"
-                    export MAVEN_OPTS="-Xms8G -Xmx8G -XX:MaxPermSize=2048m -XX:MaxDirectMemorySize=2048m -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+                    export MAVEN_OPTS="-Xmx8G -XX:MaxDirectMemorySize=2048m -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
               """
-*/
 
 pipeline {
     agent any
@@ -24,13 +21,11 @@ pipeline {
             steps {
                 echo '[+] Prepare Stage'
                 sh """
-                rm -rf /var/cache/jenkins/*
                 rm -rf ${projectName}
                 rm -rf ${installDir+projectName}
                 rm -rf ${installDir+projectName}@tmp
-                rm -rf /var/lib/jenkins/.m2/repository
-                rm -rf /var/lib/home/.m2/repository
-                    ${envOpts}
+                sudo service ${projectName} stop > /dev/null
+                ${envOpts}
                     if [ ! -d '${installDir}' ]; then
                             mkdir -p ${installDir}
                     fi
@@ -61,7 +56,7 @@ pipeline {
              dir("${installDir+projectName}"){
                     sh "${envOpts}"
                     echo ' Testes Unitários Maven ';
-                    if(skipTests == false) sh ' mvn  test'
+                    //if(skipTests == false) sh ' mvn  test'
                 }
             }
         }
@@ -92,7 +87,7 @@ pipeline {
                 echo 'ExecStart=${execStart} SuccessExitStatus=143' >>  ${serviceFile}
                 echo '[Install]' >>  ${serviceFile}
                 echo 'WantedBy=multi-user.target' >>  ${serviceFile}
-                chmod +x +r  ${serviceFile}
+                chmod +x  ${serviceFile}
                 """
                 }    
             }
@@ -101,7 +96,7 @@ pipeline {
         stage('Deploy') {
             steps {
                  echo  "Running the Service Aplication"
-                 sh "service ${projectName} start"
+                 sh "sudo service ${projectName} start"
             }
         }
      
