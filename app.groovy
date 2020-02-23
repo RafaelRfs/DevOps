@@ -58,6 +58,7 @@ pipeline {
             steps {
                 dir("${installDir+projectName}"){
                     echo 'iniciando o build da aplicação ';
+                    sh "echo Maven OPTS >>  $MAVEN_OPTS "
                     sh 'mvn clean install'
                 }     
             }
