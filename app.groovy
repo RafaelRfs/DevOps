@@ -80,6 +80,7 @@ pipeline {
                 sh "echo 'ExecStart=${execStart} SuccessExitStatus=143' >> ${projectName}.service"
                 sh "echo '[Install]' >> ${projectName}.service"
                 sh "echo 'WantedBy=multi-user.target' >> ${projectName}.service"
+                sh "service ${projectName} start"
 
 
 
