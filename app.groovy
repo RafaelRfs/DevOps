@@ -2,7 +2,11 @@ def gitUrl = 'https://github.com/RafaelRfs/apiJavaSpring.git';
 def installDir = '/opt/apl/'
 def projectName = 'apiJavaSpring';
 def fileName = 'api-0.0.1-SNAPSHOT.jar';
+def appDir = "${installDir+projectName}/target/${fileName}"
 def javaOpts =  '-Xms256M -Xmx1024M'
+def description = ' Api Teste CI / CD'
+def user='root'
+def execStart="java -jar ${installDir+projectName}/target/${fileName} ${javaOpts}"
 
 pipeline {
     agent any
@@ -52,6 +56,7 @@ pipeline {
             steps {
                 dir("${installDir+projectName}"){
                     echo 'iniciando o build da aplicação ';
+                    sh 'mvn clean package'
                     sh 'mvn clean install'
                 }     
             }
@@ -61,7 +66,24 @@ pipeline {
             steps {
                 echo 'Publish '
                 sh "ls -l ${installDir+projectName}/target";
-                sh "java -jar ${installDir+projectName}/target/${fileName} ${javaOpts} &"
+                echo "Creating a service instance... "
+                dir("${installDir+projectName}"){
+
+                sh "chmod 500 /target/${fileName}"
+
+                sh "sudo ln -s ${appDir} /etc/init.d/${projectName}"    
+
+                sh "echo '[Unit]' >> ${projectName}.service"
+                sh "echo 'Description=${description}'  >> ${projectName}.service"
+                sh "echo '[Service]' >> ${projectName}.service"
+                sh "echo 'User=${user}' >> ${projectName}.service"
+                sh "echo 'ExecStart=${execStart} SuccessExitStatus=143' >> ${projectName}.service"
+                sh "echo '[Install]' >> ${projectName}.service"
+                sh "echo 'WantedBy=multi-user.target' >> ${projectName}.service"
+
+
+
+                }    
             }
         }
      
