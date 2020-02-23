@@ -58,7 +58,6 @@ pipeline {
             steps {
                 dir("${installDir+projectName}"){
                     echo 'iniciando o build da aplicação ';
-                    sh 'mvn clean package'
                     sh 'mvn clean install'
                 }     
             }
