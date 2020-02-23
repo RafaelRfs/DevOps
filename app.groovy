@@ -70,7 +70,6 @@ pipeline {
                 echo "Creating a service instance... "
                 dir("${installDir+projectName}"){
                 sh "chmod 500 target/${fileName}"
-                sh "ln -s ${appDir} /etc/init.d/${projectName}"    
                 sh "rm -rf  ${serviceFile} "
                 sh "echo '[Unit]' >> ${serviceFile}"
                 sh "echo 'Description=${description}'  >>  ${serviceFile}"
@@ -80,7 +79,6 @@ pipeline {
                 sh "echo '[Install]' >>  ${serviceFile}"
                 sh "echo 'WantedBy=multi-user.target' >>  ${serviceFile}"
                 sh "chmod +x +r  ${serviceFile}"
-               
                 }    
             }
         }
