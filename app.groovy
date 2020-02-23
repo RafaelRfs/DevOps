@@ -45,9 +45,7 @@ pipeline {
             echo "Moving to ${installDir}";
             sh "mv ${projectName} ${installDir}"; 
             dir("${installDir+projectName}"){
-                sh 'mvn help:evaluate -Dexpression=settings.localRepository'
                 sh 'mvn --version'
-                sh 'mvn clean'
                 }
             }
         }
