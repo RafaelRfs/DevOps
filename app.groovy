@@ -69,7 +69,7 @@ pipeline {
                 echo "Creating a service instance... "
                 dir("${installDir+projectName}"){
 
-                sh "chmod 500 /target/${fileName}"
+                sh "chmod 500 target/${fileName}"
 
                 sh "sudo ln -s ${appDir} /etc/init.d/${projectName}"    
 
