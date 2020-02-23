@@ -10,7 +10,7 @@ def execStart="java -jar ${installDir+projectName}/target/${fileName} ${javaOpts
 def serviceFile = "/etc/systemd/system/${projectName}.service"
 def envOpts = """
                     export JDK_JAVA_OPTIONS="--add-opens java.base/java.lang=com.google.guice,javassist"
-                    export MAVEN_OPTS="-Xms256M -Xmx1024M -XX:MaxPermSize=350m -XX:MaxDirectMemorySize=1024m"
+                    export MAVEN_OPTS="-Xms256M -Xmx1024M -XX:MaxPermSize=350m -XX:MaxDirectMemorySize=1024m -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
               """
 
 pipeline {
@@ -57,7 +57,7 @@ pipeline {
              dir("${installDir+projectName}"){
                     sh "${envOpts}"
                     echo ' Testes Unitários Maven ';
-                    sh ' mvn test'
+                    sh ' mvn -T 2 test'
                 }
             }
         }
@@ -67,7 +67,7 @@ pipeline {
                 dir("${installDir+projectName}"){
                     echo 'iniciando o build da aplicação ';
                     sh "${envOpts}"
-                    sh 'mvn clean install -Dskiptests=true'
+                    sh 'mvn -T 4 clean install -Dskiptests=true'
                 }     
             }
         }
