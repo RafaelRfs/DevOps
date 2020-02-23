@@ -22,7 +22,7 @@ pipeline {
                 sh "rm -rf ${projectName}"
                 sh "rm -rf ${installDir+projectName}"
                 sh "rm -rf ${installDir+projectName}@tmp"
-                sh "rm -rf /var/lib/jenkins/.m2/repository"
+                sh "rm -rf /var/lib/jenkins/.m2"
                 sh """
                     ${envOpts}
                     if [ ! -d '${installDir}' ]; then
