@@ -21,10 +21,12 @@ pipeline {
             steps {
                 echo '[+] Prepare Stage'
                 sh """
-                rm -rf ${projectName}
-                rm -rf ${installDir+projectName}
-                rm -rf ${installDir+projectName}@tmp
-                sudo service ${projectName} stop > /dev/null
+                sudo rm -rf ${projectName}
+                sudo rm -rf ${installDir+projectName}
+                sudo rm -rf ${installDir+projectName}@tmp
+                if service --status-all | grep -Fq '${projectName}'; then    
+                    sudo service ${projectName} stop    
+                fi
                 ${envOpts}
                     if [ ! -d '${installDir}' ]; then
                             mkdir -p ${installDir}
