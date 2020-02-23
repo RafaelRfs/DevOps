@@ -25,8 +25,6 @@ pipeline {
                 echo '[+] Prepare Stage'
                 sh """
                 rm -rf /var/cache/jenkins/*
-                rm -rf  /var/lib/jenkins/*
-                rm -rf /var/log/jenkins/*
                 rm -rf ${projectName}
                 rm -rf ${installDir+projectName}
                 rm -rf ${installDir+projectName}@tmp
@@ -83,16 +81,19 @@ pipeline {
                 sh "ls -l ${installDir+projectName}/target";
                 echo "Creating a service instance... "
                 dir("${installDir+projectName}"){
-                sh "chmod 500 target/${fileName}"
-                sh "rm -rf  ${serviceFile} "
-                sh "echo '[Unit]' >> ${serviceFile}"
-                sh "echo 'Description=${description}'  >>  ${serviceFile}"
-                sh "echo '[Service]' >>  ${serviceFile}"
-                sh "echo 'User=${user}' >>  ${serviceFile}"
-                sh "echo 'ExecStart=${execStart} SuccessExitStatus=143' >>  ${serviceFile}"
-                sh "echo '[Install]' >>  ${serviceFile}"
-                sh "echo 'WantedBy=multi-user.target' >>  ${serviceFile}"
-                sh "chmod +x +r  ${serviceFile}"
+                sh """
+                chmod 500 target/${fileName}
+                rm -rf  ${serviceFile}
+                touch  ${serviceFile}
+                echo '[Unit]' >> ${serviceFile}
+                echo 'Description=${description}'  >>  ${serviceFile}
+                echo '[Service]' >>  ${serviceFile}
+                echo 'User=${user}' >>  ${serviceFile}
+                echo 'ExecStart=${execStart} SuccessExitStatus=143' >>  ${serviceFile}
+                echo '[Install]' >>  ${serviceFile}
+                echo 'WantedBy=multi-user.target' >>  ${serviceFile}
+                chmod +x +r  ${serviceFile}
+                """
                 }    
             }
         }
