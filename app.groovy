@@ -7,6 +7,7 @@ def javaOpts =  '-Xms256M -Xmx1024M'
 def description = ' Api Teste CI / CD'
 def user='root'
 def execStart="java -jar ${installDir+projectName}/target/${fileName} ${javaOpts}"
+def serviceFile = "/etc/systemd/system/${projectName}.service"
 
 pipeline {
     agent any
@@ -16,6 +17,7 @@ pipeline {
                 echo '[+] Prepare Stage'
                 sh "rm -rf ${projectName}"
                 sh "rm -rf ${installDir+projectName}"
+                sh "rm -rf ${installDir+projectName}@tmp"
                 sh """
                     export MAVEN_OPTS="-Xms256M -Xmx1024M -XX:MaxPermSize=350m -XX:MaxDirectMemorySize=1024m"
                     if [ ! -d '${installDir}' ]; then
@@ -62,29 +64,31 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Publish') {
             steps {
-                echo 'Publish '
                 sh "ls -l ${installDir+projectName}/target";
                 echo "Creating a service instance... "
                 dir("${installDir+projectName}"){
-
                 sh "chmod 500 target/${fileName}"
-
-                sh "sudo ln -s ${appDir} /etc/init.d/${projectName}"    
-
-                sh "echo '[Unit]' >> ${projectName}.service"
-                sh "echo 'Description=${description}'  >> ${projectName}.service"
-                sh "echo '[Service]' >> ${projectName}.service"
-                sh "echo 'User=${user}' >> ${projectName}.service"
-                sh "echo 'ExecStart=${execStart} SuccessExitStatus=143' >> ${projectName}.service"
-                sh "echo '[Install]' >> ${projectName}.service"
-                sh "echo 'WantedBy=multi-user.target' >> ${projectName}.service"
-                sh "service ${projectName} start"
-
-
-
+                sh "ln -s ${appDir} /etc/init.d/${projectName}"    
+                sh "rm -rf  ${serviceFile} "
+                sh "echo '[Unit]' >> ${serviceFile}"
+                sh "echo 'Description=${description}'  >>  ${serviceFile}"
+                sh "echo '[Service]' >>  ${serviceFile}"
+                sh "echo 'User=${user}' >>  ${serviceFile}"
+                sh "echo 'ExecStart=${execStart} SuccessExitStatus=143' >>  ${serviceFile}"
+                sh "echo '[Install]' >>  ${serviceFile}"
+                sh "echo 'WantedBy=multi-user.target' >>  ${serviceFile}"
+                sh "chmod +x +r  ${serviceFile}"
+               
                 }    
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                 echo  "Running the Service Aplication"
+                 sh "service ${projectName} start"
             }
         }
      
