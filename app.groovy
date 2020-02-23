@@ -68,7 +68,7 @@ pipeline {
                 dir("${installDir+projectName}"){
                     echo 'iniciando o build da aplicação ';
                     sh "${envOpts}"
-                    sh 'mvn clean install -Dskiptests=true'
+                    sh 'sudo mvn clean install -Dskiptests=true'
                 }     
             }
         }
@@ -80,7 +80,7 @@ pipeline {
                 dir("${installDir+projectName}"){
                 sh """
                 chmod 500 target/${fileName}
-                rm -rf  ${serviceFile}
+                sudo rm -rf  ${serviceFile}
                 touch  ${serviceFile}
                 echo '[Unit]' >> ${serviceFile}
                 echo 'Description=${description}'  >>  ${serviceFile}
@@ -89,7 +89,7 @@ pipeline {
                 echo 'ExecStart=${execStart} SuccessExitStatus=143' >>  ${serviceFile}
                 echo '[Install]' >>  ${serviceFile}
                 echo 'WantedBy=multi-user.target' >>  ${serviceFile}
-                chmod +x  ${serviceFile}
+                sudo chmod +x  ${serviceFile}
                 """
                 }    
             }
