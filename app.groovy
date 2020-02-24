@@ -21,6 +21,7 @@ pipeline {
             steps {
                 echo '[+] Prepare Stage'
                 sh """
+                apt clean 
                 sudo rm -rf ${projectName}
                 sudo rm -rf ${installDir+projectName}
                 sudo rm -rf ${installDir+projectName}@tmp
@@ -79,17 +80,18 @@ pipeline {
                 echo "Creating a service instance... "
                 dir("${installDir+projectName}"){
                 sh """
-                chmod 500 target/${fileName}
+                sudo chmod 500 target/${fileName}
                 sudo rm -rf  ${serviceFile}
-                touch  ${serviceFile}
-                echo '[Unit]' >> ${serviceFile}
-                echo 'Description=${description}'  >>  ${serviceFile}
-                echo '[Service]' >>  ${serviceFile}
-                echo 'User=${user}' >>  ${serviceFile}
-                echo 'ExecStart=${execStart} SuccessExitStatus=143' >>  ${serviceFile}
-                echo '[Install]' >>  ${serviceFile}
-                echo 'WantedBy=multi-user.target' >>  ${serviceFile}
+                sudo touch  ${serviceFile}
+                sudo echo '[Unit]' >> ${serviceFile}
+                sudo echo 'Description=${description}'  >>  ${serviceFile}
+                sudo echo '[Service]' >>  ${serviceFile}
+                sudo echo 'User=${user}' >>  ${serviceFile}
+                sudo echo 'ExecStart=${execStart} SuccessExitStatus=143' >>  ${serviceFile}
+                sudo echo '[Install]' >>  ${serviceFile}
+                sudo echo 'WantedBy=multi-user.target' >>  ${serviceFile}
                 sudo chmod +x  ${serviceFile}
+                ls -l ${serviceFile}
                 """
                 }    
             }
