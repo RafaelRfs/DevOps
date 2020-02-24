@@ -59,7 +59,7 @@ pipeline {
              dir("${installDir+projectName}"){
                     sh "${envOpts}"
                     echo ' Testes Unitários Maven ';
-                    //if(skipTests == false) sh ' mvn  test'
+                    sh ' sudo mvn  test'
                 }
             }
         }
