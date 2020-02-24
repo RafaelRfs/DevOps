@@ -7,7 +7,8 @@ def javaOpts =  '-Xms256M -Xmx1024M'
 def description = ' Api Teste CI / CD'
 def user='root'
 def execStart="/usr/bin/java -jar ${installDir+projectName}/target/${fileName} ${javaOpts}"
-def serviceFile = "/etc/systemd/system/${projectName}.service"
+def sysDir = "/etc/systemd/system/"
+def serviceFile = "${projectName}.service"
 def skipTests =  true
 def envOpts = """
                     export JDK_JAVA_OPTIONS="--add-opens java.base/java.lang=com.google.guice,javassist"
@@ -21,7 +22,6 @@ pipeline {
             steps {
                 echo '[+] Prepare Stage'
                 sh """
-                apt clean 
                 sudo rm -rf ${projectName}
                 sudo rm -rf ${installDir+projectName}
                 sudo rm -rf ${installDir+projectName}@tmp
@@ -82,7 +82,6 @@ pipeline {
                 sh """
                 sudo chmod 500 target/${fileName}
                 sudo rm -rf  ${serviceFile}
-                sudo touch  ${serviceFile}
                 sudo echo '[Unit]' >> ${serviceFile}
                 sudo echo 'Description=${description}'  >>  ${serviceFile}
                 sudo echo '[Service]' >>  ${serviceFile}
@@ -91,7 +90,8 @@ pipeline {
                 sudo echo '[Install]' >>  ${serviceFile}
                 sudo echo 'WantedBy=multi-user.target' >>  ${serviceFile}
                 sudo chmod +x  ${serviceFile}
-                ls -l ${serviceFile}
+                sudo mv ${serviceFile}  ${sysDir}
+                ls -l ${sysDir}
                 """
                 }    
             }
@@ -101,6 +101,8 @@ pipeline {
             steps {
                  echo  "Running the Service Aplication"
                  sh "sudo service ${projectName} start"
+                 sh "sudo service status"
+                 echo "Deploy Sucess"
             }
         }
      
