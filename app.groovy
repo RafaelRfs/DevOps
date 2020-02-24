@@ -101,7 +101,7 @@ pipeline {
             steps {
                  echo  "Running the Service Aplication"
                  sh "sudo service ${projectName} start"
-                 sh "sudo service status"
+                 sh "sudo service status ${projectName}"
                  echo "Deploy Sucess"
             }
         }
